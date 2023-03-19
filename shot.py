@@ -17,5 +17,6 @@ converter = Converter(
 
 listener = keyboard.Listener(on_press=converter.on_press)
 listener.start()
+print('[INFO] - Started')
 listener.join()
 

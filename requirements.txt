@@ -1,0 +1,4 @@
+easyocr
+pyautogui
+pynput
+numpy

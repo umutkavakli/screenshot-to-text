@@ -19,7 +19,7 @@ class Converter:
             self.x1, self.y1 = x, y
         if not pressed:
             self.x2, self.y2 = x, y
-            print('INFO - Screen-shot is taken.\n')
+            print('[INFO] - Screen-shot taken.\n')
             self.mouse_listener.stop()
         
     def start(self):
@@ -28,26 +28,38 @@ class Converter:
 
     def on_press(self, key):
         if key.char == 'p': 
-            print('\nINFO - p: Screen-shot mode activated.')
+            print('\n[INFO] - p: Screen-shot mode activated.')
             self.start()
             self.mouse_listener.join()
-            results = self.get_text()
-            
-            self.save(results)
+            results = self.get_text()      
+            data = self.process(results)
+            self.save(data)
 
         if key.char == 'q':
-            print("\nINFO - q: Exiting...")
+            print("\n[INFO] - q: Exiting...")
             return False
         
     def get_text(self):
-        image = pyautogui.screenshot(region=(self.x1, 
-                                           self.y1, 
-                                           self.x2 - self.x1, 
-                                           self.y2 - self.y1))
+        image = pyautogui.screenshot(
+            region=(
+                self.x1, 
+                self.y1, 
+                self.x2 - self.x1, 
+                self.y2 - self.y1
+            )
+        )
         
         reader = easyocr.Reader(self.lang, gpu=False, verbose=0)
-        results = reader.readtext(np.array(image), detail=0)
+        results = reader.readtext(np.array(image), detail=0, text_threshold=0.6, low_text=0.2)
         return results
+    
+    def process(self, results):
+        x = []
+        for i, result in enumerate(results):
+            if 'http'in result:
+                x.append("".join(result.split()).lower())
+        return x        
+
     
     def save(self, data):
         
@@ -62,9 +74,9 @@ class Converter:
             with open(file_path, 'a') as f:
                 if len(data) > 0:
                     f.write('\n'.join(data) + '\n')
-                    print(f'INFO - Succesfully saved in {file_path}')
+                    print(f'[INFO] - Succesfully saved in {file_path}')
                     return
-                print('INFO - Failed')
+                print('[INFO] - Failed')
         
         for line in data:
             print(line)
