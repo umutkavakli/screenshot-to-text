@@ -54,11 +54,11 @@ class Converter:
         return results
     
     def process(self, results):
-        x = []
+        data = []
         for i, result in enumerate(results):
             if 'http'in result:
-                x.append("".join(result.split()).lower())
-        return x        
+                data.append("".join(result.split()).lower())
+        return data        
 
     
     def save(self, data):
